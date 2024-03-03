@@ -15,7 +15,7 @@ using Object = UnityEngine.Object;
 
 namespace MissileTurret
 {
-    [BepInPlugin("Finnerex.MissileTurret", "MissileTurret", "1.0.1")]
+    [BepInPlugin("Finnerex.MissileTurret", "MissileTurret", "1.0.2")]
     [BepInDependency(LethalLib.Plugin.ModGUID)] 
     public class MissileTurret : BaseUnityPlugin
     {
@@ -139,6 +139,8 @@ namespace MissileTurret
                 new ConfigDescription("Maximum speed of a missile")).Value;
             MissileAI.MaxTurnSpeed = Config.Bind<float>(new ConfigDefinition("Missile Options", "Turn Rate"), 0.4f,
                 new ConfigDescription("How fast the missile can turn")).Value;
+            MissileAI.Acceleration = Config.Bind<float>(new ConfigDefinition("Missile Options", "Acceleration"), 0.1f,
+                new ConfigDescription("Acceleration of the missile")).Value / 100f;
             
             MissileAI.KillRange = Config.Bind<float>(new ConfigDefinition("Missile Options", "Explosive Kill Range"), 1f,
                 new ConfigDescription("Distance from explosion to kill")).Value;

@@ -59,8 +59,8 @@ public class MissileTurretAI : NetworkBehaviour
         {
             case MissileTurretState.SEARCHING:
 
-                if (_lastState != MissileTurretState.SEARCHING)
-                    MissileTurret.TheLogger.LogInfo("searching");
+                // if (_lastState != MissileTurretState.SEARCHING)
+                //     MissileTurret.TheLogger.LogInfo("searching");
 
 
                 if (Physics.Raycast(rod.position + rod.up, rod.up, out RaycastHit hit, 30, 1051400,
@@ -74,7 +74,7 @@ public class MissileTurretAI : NetworkBehaviour
 
                     stateToChangeTo = MissileTurretState.CHARGING;
             
-                    MissileTurret.TheLogger.LogInfo("Player line of sight");
+                    // MissileTurret.TheLogger.LogInfo("Player line of sight");
                 }
                 else
                 {
@@ -127,7 +127,7 @@ public class MissileTurretAI : NetworkBehaviour
                         break;
                     }
                     
-                    MissileTurret.TheLogger.LogInfo($"firing at player {_targetPlayer.name}");
+                    // MissileTurret.TheLogger.LogInfo($"firing at player {_targetPlayer.name}");
                     if (NetworkManager.Singleton.IsServer || NetworkManager.Singleton.IsHost)
                     {
                         MissileAI ai = Instantiate(MissileTurret.MissilePrefab, rod.position + Vector3.up, Quaternion.LookRotation(rod.up)).GetComponent<MissileAI>();

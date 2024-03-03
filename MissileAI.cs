@@ -21,6 +21,7 @@ public class MissileAI : NetworkBehaviour
 
     public static float MaxTurnSpeed = 1f;
     public static float MaxSpeed = 0.7f;
+    public static float Acceleration = 0.001f;
 
     public static float KillRange = 1f;
     public static float DamageRange = 5f;
@@ -46,7 +47,7 @@ public class MissileAI : NetworkBehaviour
             _speed += 0.0004f;
         }
         else if (_speed < MaxSpeed)
-            _speed += 0.001f;
+            _speed += Acceleration;
         
         
         _rigidbody.MovePosition(t.position + forward * _speed);
