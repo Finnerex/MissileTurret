@@ -120,10 +120,8 @@ public class MissileTurretAI : NetworkBehaviour
                 if (_lastState != MissileTurretState.FIRING)
                 {
                     // check if can still have line of sight
-                    if (/*(!Physics.Raycast(rod.position + rod.up, rod.position - _targetPlayer.transform.position,
-                            out hit, 30, 1051400, QueryTriggerInteraction.Ignore) || !hit.transform.CompareTag("Player")) &&*/
-                        (!Physics.Raycast(rod.position + rod.forward, _targetPlayer.transform.position - rod.position,
-                            out hit, 30, 1051400, QueryTriggerInteraction.Ignore) || !hit.transform.CompareTag("Player")))
+                    if (!Physics.Raycast(rod.position + rod.forward, _targetPlayer.transform.position - rod.position,
+                            out hit, 30, 1051400, QueryTriggerInteraction.Ignore) || !hit.transform.CompareTag("Player"))
                     {
                         stateToChangeTo = MissileTurretState.SEARCHING;
                         break;
@@ -140,8 +138,6 @@ public class MissileTurretAI : NetworkBehaviour
                         ToggleMissileClientRpc(false);
                     }
                     
-                    
-                    MissileTurret.TheLogger.LogInfo("Shooted " + missile.name);
                 }
                 
                 if (_currentReloadTime <= 0)
@@ -169,7 +165,6 @@ public class MissileTurretAI : NetworkBehaviour
             _state = stateToChangeTo.Value;
             SetStateClientRpc(_state);
         }
-            
 
     }
 
@@ -192,7 +187,6 @@ public class MissileTurretAI : NetworkBehaviour
     {
         missile.SetActive(active);
     }
-
-    // idk i probably need a target player rpc and a shoot rpc but idk man
+    
 }
 

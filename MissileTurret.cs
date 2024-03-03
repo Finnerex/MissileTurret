@@ -100,14 +100,11 @@ namespace MissileTurret
         [HarmonyPostfix, HarmonyPatch(typeof(StartOfRound), nameof(StartOfRound.Awake))]
         static void SpawnNetworkHandler()
         {
-            TheLogger.LogInfo("----------------- THIS SHOULD HAVE HAPPENED ---------------- ");
 
             if(NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
             {
                 GameObject networkHandlerHost = Instantiate(NetworkPrefab, Vector3.zero, Quaternion.identity);
                 networkHandlerHost.GetComponent<NetworkObject>().Spawn();
-                
-                TheLogger.LogInfo("spawned net handler");
             }
         }
         

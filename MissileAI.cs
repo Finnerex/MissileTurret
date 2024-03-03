@@ -29,7 +29,6 @@ public class MissileAI : NetworkBehaviour
     {
         _rigidbody = GetComponent<Rigidbody>();
         _currentLaunchTime = launchTimeSeconds;
-        // NetworkHandler.LevelEvent += 
     }
 
     private void Update()
@@ -81,22 +80,4 @@ public class MissileAI : NetworkBehaviour
         Destroy(gameObject);
     }
 
-
-
-
-    // idk man
-    // [HarmonyPostfix, HarmonyPatch(typeof(RoundManager), nameof(RoundManager.GenerateNewFloor))]
-    // static void SubscribeToHandler()
-    // {
-    //     MissileTurret.TheLogger.LogInfo("This happende (subscribe) !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-    //     NetworkHandler.ExplodeEvent += ExplodeOnClients;
-    // }
-    //
-    // [HarmonyPostfix, HarmonyPatch(typeof(RoundManager), nameof(RoundManager.DespawnPropsAtEndOfRound))]
-    // static void UnsubscribeFromHandler()
-    // {
-    //     MissileTurret.TheLogger.LogInfo("This happende (unload) !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-    //     NetworkHandler.ExplodeEvent -= ExplodeOnClients;
-    // }
-    
 }
