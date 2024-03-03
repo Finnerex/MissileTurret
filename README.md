@@ -9,7 +9,6 @@ They are like normal turrets but they shoot missiles.
 - Missile turn rate  
 - Missile acceleration  
 - Explosion kill & damage range  
-- Missile acceleration  
 - Turret rotation range & rate  
 - Turret charge up & reload time  
 - Max & min number of turret spawns  
