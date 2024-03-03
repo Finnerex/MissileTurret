@@ -6,8 +6,7 @@ They are like normal turrets but they shoot missiles.
 ### Config Options
 
 - Max missile speed  
-- Missile turn rate  
-- Missile acceleration  
+- Missile acceleration & turn rate  
 - Explosion kill & damage range  
 - Turret rotation range & rate  
 - Turret charge up & reload time  
@@ -15,8 +14,8 @@ They are like normal turrets but they shoot missiles.
 
 ### Planned Features
 
-- Radar icon  
 - Ability to be disabled from ship  
+- Maybe configurable per-moon spawn rates
 
 ### Issues & Suggestions  
 
@@ -25,7 +24,7 @@ Also, feel free to contribute!
   
 #### Known Issues
 
-- Missiles might not sync properly between server & client (maybe)
+- Missiles might not sync properly between server & client (maybe) (please let me know if you experience this)
 
 
 #### Credits
