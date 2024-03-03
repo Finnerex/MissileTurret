@@ -15,7 +15,7 @@ using Object = UnityEngine.Object;
 
 namespace MissileTurret
 {
-    [BepInPlugin("Finnerex.MissileTurret", "MissileTurret", "1.0.3")]
+    [BepInPlugin("Finnerex.MissileTurret", "MissileTurret", "1.1.0")]
     [BepInDependency(LethalLib.Plugin.ModGUID)] 
     public class MissileTurret : BaseUnityPlugin
     {
@@ -25,8 +25,7 @@ namespace MissileTurret
         public static SpawnableMapObject MissileTurretMapObj;
         public static GameObject MissileTurretPrefab;
         public static GameObject MissilePrefab;
-
-        // public static GameObject NetworkPrefab;
+        
 
         public static ManualLogSource TheLogger;
         
@@ -60,23 +59,18 @@ namespace MissileTurret
             
             MissileTurretPrefab = bundle.LoadAsset<GameObject>("MissileTurret");
             MissilePrefab = bundle.LoadAsset<GameObject>("Missile");
-            // NetworkPrefab = bundle.LoadAsset<GameObject>("Networker");
 
             // initialize the prefabs
             MissileTurretAI ai = MissileTurretPrefab.AddComponent<MissileTurretAI>();
             ai.missile = MissileTurretPrefab.transform.Find("missileTurret/Mount/Rod/Rod.001/Cylinder").gameObject;
             ai.rod = MissileTurretPrefab.transform.Find("missileTurret/Mount/Rod");
             ai.acquireTargetAudio = ai.rod.GetComponent<AudioSource>();
-            // ai.laser = ai.rod.gameObject.GetComponentInChildren<Light>();
+            ai.laser = ai.rod.Find("LaserLight").gameObject;
 
             MissilePrefab.AddComponent<MissileAI>();
-
-            // NetworkPrefab.AddComponent<NetworkHandler>();
-            
             
             NetworkPrefabs.RegisterNetworkPrefab(MissileTurretPrefab);
             NetworkPrefabs.RegisterNetworkPrefab(MissilePrefab);
-            // NetworkPrefabs.RegisterNetworkPrefab(NetworkPrefab);
             
             
             AnimationCurve curve = new AnimationCurve(new Keyframe(0, MinTurrets), new Keyframe(1, MaxTurrets)); // for sure
@@ -97,17 +91,6 @@ namespace MissileTurret
 
         }
         
-        
-        // [HarmonyPostfix, HarmonyPatch(typeof(StartOfRound), nameof(StartOfRound.Awake))]
-        // static void SpawnNetworkHandler()
-        // {
-        //
-        //     if(NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
-        //     {
-        //         GameObject networkHandlerHost = Instantiate(NetworkPrefab, Vector3.zero, Quaternion.identity);
-        //         networkHandlerHost.GetComponent<NetworkObject>().Spawn(true);
-        //     }
-        // }
         
         private static void InitializeNetworkBehaviours() {
             // See https://github.com/EvaisaDev/UnityNetcodePatcher?tab=readme-ov-file#preparing-mods-for-patching

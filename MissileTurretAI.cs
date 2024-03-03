@@ -13,7 +13,7 @@ public class MissileTurretAI : NetworkBehaviour
 {
     public Transform rod;
     public GameObject missile;
-    // public Light laser;
+    public GameObject laser;
     
     public static float RotationRange = 40f;
     public static float RotationSpeed = 0.15f;
@@ -45,6 +45,9 @@ public class MissileTurretAI : NetworkBehaviour
         _currentReloadTime = ReloadTimeSeconds;
         _currentChargeTime = ChargeTimeSeconds;
         _currentRotationSpeed = RotationSpeed;
+        
+        laser.SetActive(false);
+        ToggleLaserClientRpc(false);
     }
 
     private void Update()
@@ -60,10 +63,6 @@ public class MissileTurretAI : NetworkBehaviour
         {
             case MissileTurretState.SEARCHING:
 
-                // if (_lastState != MissileTurretState.SEARCHING)
-                //     MissileTurret.TheLogger.LogInfo("searching");
-
-
                 if (Physics.Raycast(rod.position + rod.up, rod.up, out RaycastHit hit, 30, 1051400,
                         QueryTriggerInteraction.Ignore) && hit.transform.CompareTag("Player"))
                 {
@@ -74,8 +73,6 @@ public class MissileTurretAI : NetworkBehaviour
                     }
 
                     stateToChangeTo = MissileTurretState.CHARGING;
-            
-                    // MissileTurret.TheLogger.LogInfo("Player line of sight");
                 }
                 else
                 {
@@ -103,7 +100,11 @@ public class MissileTurretAI : NetworkBehaviour
                 if (_lastState != MissileTurretState.CHARGING)
                 {
                     acquireTargetAudio.Play();
-                    // laser.enabled = true;
+                    if (NetworkManager.Singleton.IsServer || NetworkManager.Singleton.IsHost)
+                    {
+                        laser.SetActive(true);
+                        ToggleLaserClientRpc(true);
+                    }
                 }
 
                 if (_currentChargeTime <= 0)
@@ -123,8 +124,12 @@ public class MissileTurretAI : NetworkBehaviour
 
                 if (_lastState != MissileTurretState.FIRING)
                 {
-                    // laser.enabled = false;
-                    
+                    if (NetworkManager.Singleton.IsServer || NetworkManager.Singleton.IsHost)
+                    {
+                        laser.SetActive(false);
+                        ToggleLaserClientRpc(false);
+                    }
+
                     // check if can still have line of sight
                     if (!Physics.Raycast(rod.position + rod.forward, _targetPlayer.transform.position - rod.position,
                             out hit, 30, 1051400, QueryTriggerInteraction.Ignore) || !hit.transform.CompareTag("Player"))
@@ -133,7 +138,6 @@ public class MissileTurretAI : NetworkBehaviour
                         break;
                     }
                     
-                    // MissileTurret.TheLogger.LogInfo($"firing at player {_targetPlayer.name}");
                     if (NetworkManager.Singleton.IsServer || NetworkManager.Singleton.IsHost)
                     {
                         MissileAI ai = Instantiate(MissileTurret.MissilePrefab, rod.position + Vector3.up, Quaternion.LookRotation(rod.up)).GetComponent<MissileAI>();
@@ -192,6 +196,12 @@ public class MissileTurretAI : NetworkBehaviour
     private void ToggleMissileClientRpc(bool active)
     {
         missile.SetActive(active);
+    }
+
+    [ClientRpc]
+    private void ToggleLaserClientRpc(bool active) // this might not be necessary at all
+    {
+        laser.SetActive(active);
     }
     
 }
