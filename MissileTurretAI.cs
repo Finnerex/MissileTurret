@@ -16,6 +16,7 @@ public class MissileTurretAI : NetworkBehaviour
     
     public static float RotationRange = 40f;
     public static float RotationSpeed = 0.15f;
+    private float _currentRotationSpeed = 0.15f;
 
     private enum MissileTurretState
     {
@@ -42,6 +43,7 @@ public class MissileTurretAI : NetworkBehaviour
     {
         _currentReloadTime = ReloadTimeSeconds;
         _currentChargeTime = ChargeTimeSeconds;
+        _currentRotationSpeed = RotationSpeed;
     }
 
     private void Update()
@@ -80,13 +82,13 @@ public class MissileTurretAI : NetworkBehaviour
                     stateToChangeTo = MissileTurretState.SEARCHING;
                 }
                 
-                rod.Rotate(Vector3.forward, RotationSpeed);
+                rod.Rotate(Vector3.forward, _currentRotationSpeed);
                 
                 float yaw = rod.localEulerAngles.z;
 
-                if ((yaw > RotationRange && yaw <= 180 && RotationSpeed > 0) ||
-                    (yaw < 360 - RotationRange && yaw > 180 && RotationSpeed < 0))
-                    RotationSpeed = -RotationSpeed;
+                if ((yaw > RotationRange && yaw <= 180 && _currentRotationSpeed > 0) ||
+                    (yaw < 360 - RotationRange && yaw > 180 && _currentRotationSpeed < 0))
+                    _currentRotationSpeed = -_currentRotationSpeed;
                 
                 break;
             
@@ -124,7 +126,7 @@ public class MissileTurretAI : NetworkBehaviour
                     }
                     
                     MissileTurret.TheLogger.LogInfo($"firing at player {_targetPlayer.name}");
-                    if (NetworkManager.IsServer || NetworkManager.IsHost)
+                    if (NetworkManager.Singleton.IsServer || NetworkManager.Singleton.IsHost)
                     {
                         MissileAI ai = Instantiate(MissileTurret.MissilePrefab, rod.position + Vector3.up, Quaternion.LookRotation(rod.up)).GetComponent<MissileAI>();
                         ai.player = _targetPlayer.transform;
@@ -154,5 +156,7 @@ public class MissileTurretAI : NetworkBehaviour
             _state = stateToChangeTo.Value;
 
     }
+
+    // idk i probably need a target player rpc and a shoot rpc but idk man
 }
 

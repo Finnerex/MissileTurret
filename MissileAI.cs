@@ -1,4 +1,5 @@
 ﻿using System;
+using HarmonyLib;
 using Unity.Netcode;
 using Unity.Netcode.Components;
 using UnityEngine;
@@ -7,7 +8,7 @@ namespace MissileTurret;
 
 public class MissileAI : NetworkBehaviour
 {
-    public Transform player;
+    public Transform player; // this jawng is null on client? but this shouldn't exist on client so idk man
 
     private float _speed = 0f;
 
@@ -39,11 +40,17 @@ public class MissileAI : NetworkBehaviour
         Transform t = transform;
         Vector3 forward = t.forward;
 
+        if (player is null)
+        {
+            MissileTurret.TheLogger.LogInfo("it was the player that is null");
+            _rigidbody.MovePosition(t.position + forward * 0.0005f);
+            return;
+        }
+        
         _aliveTimeSeconds += Time.deltaTime;
 
         if (_currentLaunchTime > 0)
         {
-            MissileTurret.TheLogger.LogInfo($"target: {player.name}");
             _currentLaunchTime -= Time.deltaTime;
             t.position += t.up * (_speed * 1.5f);
             _speed += 0.0004f;
@@ -73,11 +80,29 @@ public class MissileAI : NetworkBehaviour
 
     private void EndIt()
     {
-        Landmine.SpawnExplosion(transform.position, true, KillRange, DamageRange);
-        
-        if (!NetworkManager.IsHost && !NetworkManager.IsServer) return;
+        // only exists on the server anyway so this means nothing?
+        if (!NetworkManager.Singleton.IsHost && !NetworkManager.Singleton.IsServer) return;
 
+        NetworkHandler.Instance.ExplodeClientRpc(transform.position, KillRange, DamageRange);
         GetComponent<NetworkObject>().Despawn();
         Destroy(gameObject);
+        
     }
+
+    
+    // idk man
+    // [HarmonyPostfix, HarmonyPatch(typeof(RoundManager), nameof(RoundManager.GenerateNewFloor))]
+    // static void SubscribeToHandler()
+    // {
+    //     MissileTurret.TheLogger.LogInfo("This happende (subscribe) !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    //     NetworkHandler.ExplodeEvent += ExplodeOnClients;
+    // }
+    //
+    // [HarmonyPostfix, HarmonyPatch(typeof(RoundManager), nameof(RoundManager.DespawnPropsAtEndOfRound))]
+    // static void UnsubscribeFromHandler()
+    // {
+    //     MissileTurret.TheLogger.LogInfo("This happende (unload) !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    //     NetworkHandler.ExplodeEvent -= ExplodeOnClients;
+    // }
+    
 }
