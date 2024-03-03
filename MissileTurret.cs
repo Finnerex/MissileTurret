@@ -15,7 +15,7 @@ using Object = UnityEngine.Object;
 
 namespace MissileTurret
 {
-    [BepInPlugin("Finnerex.MissileTurret", "MissileTurret", "1.0.0")]
+    [BepInPlugin("Finnerex.MissileTurret", "MissileTurret", "1.0.1")]
     [BepInDependency(LethalLib.Plugin.ModGUID)] 
     public class MissileTurret : BaseUnityPlugin
     {
