@@ -67,7 +67,7 @@ namespace MissileTurret
             ai.missile = MissileTurretPrefab.transform.Find("missileTurret/Mount/Rod/Rod.001/Cylinder").gameObject;
             ai.rod = MissileTurretPrefab.transform.Find("missileTurret/Mount/Rod");
             ai.acquireTargetAudio = ai.rod.GetComponent<AudioSource>();
-            
+
             MissilePrefab.AddComponent<MissileAI>();
 
             NetworkPrefab.AddComponent<NetworkHandler>();
@@ -132,7 +132,7 @@ namespace MissileTurret
         private void Configure()
         {
             
-            MaxTurrets = Config.Bind<int>(new ConfigDefinition("Spawn Options", "Max Turrets"), 5,
+            MaxTurrets = Config.Bind<int>(new ConfigDefinition("Spawn Options", "Max Turrets"), 6,
                 new ConfigDescription("Maximum number of turrets that can be spawned")).Value;
             MinTurrets = Config.Bind<int>(new ConfigDefinition("Spawn Options", "Min Turrets"), 0,
                 new ConfigDescription("Minimum number of turrets that can be spawned")).Value;
@@ -140,7 +140,7 @@ namespace MissileTurret
             
             MissileAI.MaxSpeed = Config.Bind<float>(new ConfigDefinition("Missile Options", "Max Speed"), 0.7f,
                 new ConfigDescription("Maximum speed of a missile")).Value;
-            MissileAI.MaxTurnSpeed = Config.Bind<float>(new ConfigDefinition("Missile Options", "Turn Rate"), 0.8f,
+            MissileAI.MaxTurnSpeed = Config.Bind<float>(new ConfigDefinition("Missile Options", "Turn Rate"), 0.4f,
                 new ConfigDescription("How fast the missile can turn")).Value;
             
             MissileAI.KillRange = Config.Bind<float>(new ConfigDefinition("Missile Options", "Explosive Kill Range"), 1f,
@@ -154,11 +154,11 @@ namespace MissileTurret
                 new ConfigDescription("The angle the turret\'s search is restricted to in degrees left & right")).Value;
             
             MissileTurretAI.RotationSpeed = Config.Bind<float>(
-                new ConfigDefinition("Missile Turret Options", "Rotation Rate"), 0.15f,
+                new ConfigDefinition("Missile Turret Options", "Rotation Rate"), 0.25f,
                 new ConfigDescription("The speed at which the turret rotates")).Value;
             
             MissileTurretAI.ReloadTimeSeconds = Config.Bind<float>(
-                new ConfigDefinition("Missile Turret Options", "Reload Time"), 5f,
+                new ConfigDefinition("Missile Turret Options", "Reload Time"), 6f,
                 new ConfigDescription("The time it takes for the turret to reload in seconds")).Value;
             
             MissileTurretAI.ChargeTimeSeconds = Config.Bind<float>(

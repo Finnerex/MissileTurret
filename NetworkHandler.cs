@@ -29,8 +29,16 @@ public class NetworkHandler : NetworkBehaviour
     public void ExplodeClientRpc(Vector3 position, float killRange, float damageRange)
     {
         MissileTurret.TheLogger.LogInfo("This happende (explode) !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        Landmine.SpawnExplosion(position, true, killRange, damageRange); // If the event has subscribers (does not equal null), invoke the event
+        Landmine.SpawnExplosion(position, true, killRange, damageRange);
     }
+
+
+    // [ClientRpc] // cant be reference types for some reason
+    // public void SetTargetClientRpc(MissileAI missile, Transform target)
+    // {
+    //     MissileTurret.TheLogger.LogInfo("target set");
+    //     // missile.player = target;
+    // }
 
     
 }

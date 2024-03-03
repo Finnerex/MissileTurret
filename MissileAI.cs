@@ -30,8 +30,6 @@ public class MissileAI : NetworkBehaviour
         _rigidbody = GetComponent<Rigidbody>();
         _currentLaunchTime = launchTimeSeconds;
         // NetworkHandler.LevelEvent += 
-        
-        MissileTurret.TheLogger.LogInfo($"New Missile - rb: {_rigidbody}, ...");
     }
 
     private void Update()
@@ -40,13 +38,6 @@ public class MissileAI : NetworkBehaviour
         Transform t = transform;
         Vector3 forward = t.forward;
 
-        if (player is null)
-        {
-            MissileTurret.TheLogger.LogInfo("it was the player that is null");
-            _rigidbody.MovePosition(t.position + forward * 0.0005f);
-            return;
-        }
-        
         _aliveTimeSeconds += Time.deltaTime;
 
         if (_currentLaunchTime > 0)
@@ -62,11 +53,13 @@ public class MissileAI : NetworkBehaviour
         _rigidbody.MovePosition(t.position + forward * _speed);
 
         
-        Vector3 between = player.position + Vector3.up - t.position;
+        if (NetworkManager.Singleton.IsServer || NetworkManager.Singleton.IsHost)
+        {
+            Vector3 between = player.position + Vector3.up - t.position;
 
-        Quaternion rotationToTarget = Quaternion.LookRotation(between);
-        t.rotation = Quaternion.Lerp(t.rotation, rotationToTarget, between.magnitude * (MaxTurnSpeed / 100));
-
+            Quaternion rotationToTarget = Quaternion.LookRotation(between);
+            t.rotation = Quaternion.Lerp(t.rotation, rotationToTarget, between.magnitude * (MaxTurnSpeed / 100));
+        }
 
         if (_aliveTimeSeconds > 10)
             EndIt();
@@ -86,10 +79,11 @@ public class MissileAI : NetworkBehaviour
         NetworkHandler.Instance.ExplodeClientRpc(transform.position, KillRange, DamageRange);
         GetComponent<NetworkObject>().Despawn();
         Destroy(gameObject);
-        
     }
 
-    
+
+
+
     // idk man
     // [HarmonyPostfix, HarmonyPatch(typeof(RoundManager), nameof(RoundManager.GenerateNewFloor))]
     // static void SubscribeToHandler()

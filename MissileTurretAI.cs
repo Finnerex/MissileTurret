@@ -82,13 +82,18 @@ public class MissileTurretAI : NetworkBehaviour
                     stateToChangeTo = MissileTurretState.SEARCHING;
                 }
                 
-                rod.Rotate(Vector3.forward, _currentRotationSpeed);
-                
-                float yaw = rod.localEulerAngles.z;
+                if (NetworkManager.Singleton.IsServer || NetworkManager.Singleton.IsHost)
+                {
+                    rod.Rotate(Vector3.forward, _currentRotationSpeed);
+                    
+                    float yaw = rod.localEulerAngles.z;
 
-                if ((yaw > RotationRange && yaw <= 180 && _currentRotationSpeed > 0) ||
-                    (yaw < 360 - RotationRange && yaw > 180 && _currentRotationSpeed < 0))
-                    _currentRotationSpeed = -_currentRotationSpeed;
+                    if ((yaw > RotationRange && yaw <= 180 && _currentRotationSpeed > 0) ||
+                        (yaw < 360 - RotationRange && yaw > 180 && _currentRotationSpeed < 0))
+                        _currentRotationSpeed = -_currentRotationSpeed;
+                    
+                    SetYawClientRpc(yaw);
+                }
                 
                 break;
             
@@ -96,7 +101,7 @@ public class MissileTurretAI : NetworkBehaviour
                 
                 if (_lastState != MissileTurretState.CHARGING)
                     acquireTargetAudio.Play();
-                
+
                 if (_currentChargeTime <= 0)
                 {
                     _currentChargeTime = ChargeTimeSeconds;
@@ -104,8 +109,7 @@ public class MissileTurretAI : NetworkBehaviour
                 }
                 else
                     _currentChargeTime -= Time.deltaTime;
-                
-                
+
                 break;
             
             case MissileTurretState.FIRING:
@@ -116,9 +120,9 @@ public class MissileTurretAI : NetworkBehaviour
                 if (_lastState != MissileTurretState.FIRING)
                 {
                     // check if can still have line of sight
-                    if ((!Physics.Raycast(rod.position + rod.up, rod.position - _targetPlayer.transform.position,
-                            out hit, 30, 1051400, QueryTriggerInteraction.Ignore) || !hit.transform.CompareTag("Player")) &&
-                        (!Physics.Raycast(rod.position + rod.up, _targetPlayer.transform.position - rod.position,
+                    if (/*(!Physics.Raycast(rod.position + rod.up, rod.position - _targetPlayer.transform.position,
+                            out hit, 30, 1051400, QueryTriggerInteraction.Ignore) || !hit.transform.CompareTag("Player")) &&*/
+                        (!Physics.Raycast(rod.position + rod.forward, _targetPlayer.transform.position - rod.position,
                             out hit, 30, 1051400, QueryTriggerInteraction.Ignore) || !hit.transform.CompareTag("Player")))
                     {
                         stateToChangeTo = MissileTurretState.SEARCHING;
@@ -131,16 +135,23 @@ public class MissileTurretAI : NetworkBehaviour
                         MissileAI ai = Instantiate(MissileTurret.MissilePrefab, rod.position + Vector3.up, Quaternion.LookRotation(rod.up)).GetComponent<MissileAI>();
                         ai.player = _targetPlayer.transform;
                         ai.GetComponent<NetworkObject>().Spawn(true); // fo sho fo real
+                        
+                        missile.SetActive(false);
+                        ToggleMissileClientRpc(false);
                     }
-
-                    missile.SetActive(false);
+                    
                     
                     MissileTurret.TheLogger.LogInfo("Shooted " + missile.name);
                 }
                 
                 if (_currentReloadTime <= 0)
                 {
-                    missile.SetActive(true);
+                    if (NetworkManager.Singleton.IsServer || NetworkManager.Singleton.IsHost)
+                    {
+                        missile.SetActive(true);
+                        ToggleMissileClientRpc(true);
+                    }
+
                     _currentReloadTime = ReloadTimeSeconds;
                     stateToChangeTo = MissileTurretState.SEARCHING;
                 }
@@ -152,9 +163,34 @@ public class MissileTurretAI : NetworkBehaviour
         }
         
         _lastState = _state;
-        if (stateToChangeTo != null && stateToChangeTo != _state)
+        if (stateToChangeTo != null && stateToChangeTo != _state &&
+            (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer))
+        {
             _state = stateToChangeTo.Value;
+            SetStateClientRpc(_state);
+        }
+            
 
+    }
+
+    [ClientRpc]
+    private void SetStateClientRpc(MissileTurretState state)
+    {
+        _state = state;
+    }
+
+    [ClientRpc]
+    private void SetYawClientRpc(float yaw)
+    {
+        Vector3 angles = rod.localEulerAngles;
+        angles.z = yaw;
+        rod.localEulerAngles = angles;
+    }
+
+    [ClientRpc]
+    private void ToggleMissileClientRpc(bool active)
+    {
+        missile.SetActive(active);
     }
 
     // idk i probably need a target player rpc and a shoot rpc but idk man
