@@ -76,9 +76,15 @@ public class MissileAI : NetworkBehaviour
         // only exists on the server anyway so this means nothing?
         if (!NetworkManager.Singleton.IsHost && !NetworkManager.Singleton.IsServer) return;
 
-        NetworkHandler.Instance.ExplodeClientRpc(transform.position, KillRange, DamageRange);
+        ExplodeClientRpc(transform.position, KillRange, DamageRange);
         GetComponent<NetworkObject>().Despawn();
         Destroy(gameObject);
+    }
+    
+    [ClientRpc]
+    public void ExplodeClientRpc(Vector3 position, float killRange, float damageRange)
+    {
+        Landmine.SpawnExplosion(position, true, killRange, damageRange);
     }
 
 }

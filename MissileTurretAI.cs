@@ -13,6 +13,7 @@ public class MissileTurretAI : NetworkBehaviour
 {
     public Transform rod;
     public GameObject missile;
+    // public Light laser;
     
     public static float RotationRange = 40f;
     public static float RotationSpeed = 0.15f;
@@ -98,9 +99,12 @@ public class MissileTurretAI : NetworkBehaviour
                 break;
             
             case MissileTurretState.CHARGING:
-                
+
                 if (_lastState != MissileTurretState.CHARGING)
+                {
                     acquireTargetAudio.Play();
+                    // laser.enabled = true;
+                }
 
                 if (_currentChargeTime <= 0)
                 {
@@ -119,6 +123,8 @@ public class MissileTurretAI : NetworkBehaviour
 
                 if (_lastState != MissileTurretState.FIRING)
                 {
+                    // laser.enabled = false;
+                    
                     // check if can still have line of sight
                     if (!Physics.Raycast(rod.position + rod.forward, _targetPlayer.transform.position - rod.position,
                             out hit, 30, 1051400, QueryTriggerInteraction.Ignore) || !hit.transform.CompareTag("Player"))
