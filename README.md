@@ -17,7 +17,6 @@ They are like normal turrets but they shoot missiles.
 
 - Radar icon  
 - Ability to be disabled from ship  
-- Activation Light
 
 ### Issues & Suggestions  
 
