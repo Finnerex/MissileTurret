@@ -24,7 +24,7 @@ Also, feel free to contribute!
   
 #### Known Issues
 
-- Movement speeds are definetly not constant because I forgot some Time.deltaTime's (I will get to this asap)
+- Movement speeds are definitetly not constant because I forgot some Time.deltaTime's (I will get to this asap)
 - Missiles might not sync properly between server & client (maybe) (please let me know if you experience this)
 
 
