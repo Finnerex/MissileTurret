@@ -15,7 +15,7 @@ using Object = UnityEngine.Object;
 
 namespace MissileTurret
 {
-    [BepInPlugin("Finnerex.MissileTurret", "MissileTurret", "1.2.0")]
+    [BepInPlugin("Finnerex.MissileTurret", "MissileTurret", "1.3.0")]
     [BepInDependency(LethalLib.Plugin.ModGUID)] 
     public class MissileTurret : BaseUnityPlugin
     {
@@ -25,7 +25,7 @@ namespace MissileTurret
         public static SpawnableMapObject MissileTurretMapObj;
         public static GameObject MissileTurretPrefab;
         public static GameObject MissilePrefab;
-        
+
 
         public static ManualLogSource TheLogger;
         
@@ -62,12 +62,21 @@ namespace MissileTurret
 
             // initialize the prefabs
             MissileTurretAI ai = MissileTurretPrefab.AddComponent<MissileTurretAI>();
-            ai.missile = MissileTurretPrefab.transform.Find("missileTurret/Mount/Rod/Rod.001/Cylinder").gameObject;
+            
             ai.rod = MissileTurretPrefab.transform.Find("missileTurret/Mount/Rod");
+            ai.rail = ai.rod.Find("Rod.001");
+            ai.missile = ai.rail.Find("Cylinder").gameObject;
+            
             ai.acquireTargetAudio = ai.rod.GetComponent<AudioSource>();
+            ai.disableAudio = ai.rod.Find("DisableSound").GetComponent<AudioSource>();
+            ai.enableAudio = ai.rod.Find("EnableSound").GetComponent<AudioSource>();
             ai.laser = ai.rod.Find("LaserLight").gameObject;
 
+            
             MissilePrefab.AddComponent<MissileAI>();
+            
+            Utilities.FixMixerGroups(MissileTurretPrefab);
+            Utilities.FixMixerGroups(MissilePrefab);
             
             NetworkPrefabs.RegisterNetworkPrefab(MissileTurretPrefab);
             NetworkPrefabs.RegisterNetworkPrefab(MissilePrefab);
@@ -83,9 +92,6 @@ namespace MissileTurret
             };
 
             MapObjects.RegisterMapObject(MissileTurretMapObj, Levels.LevelTypes.All, _ => curve);
-
-            _harmony.PatchAll(typeof(MissileTurret));
-            _harmony.PatchAll(typeof(MissileAI));
 
             Logger.LogInfo("Missile Turret Loaded!!!");
 
@@ -123,7 +129,7 @@ namespace MissileTurret
                 new ConfigDescription("Maximum speed of a missile")).Value;
             MissileAI.MaxTurnSpeed = Config.Bind<float>(new ConfigDefinition("Missile Options", "Turn Rate"), 0.4f,
                 new ConfigDescription("How fast the missile can turn")).Value;
-            MissileAI.Acceleration = Config.Bind<float>(new ConfigDefinition("Missile Options", "Acceleration"), 0.1f,
+            MissileAI.Acceleration = Config.Bind<float>(new ConfigDefinition("Missile Options", "Acceleration"), 0.4f,
                 new ConfigDescription("Acceleration of the missile")).Value / 100f;
             
             MissileAI.KillRange = Config.Bind<float>(new ConfigDefinition("Missile Options", "Explosive Kill Range"), 1f,
@@ -149,6 +155,7 @@ namespace MissileTurret
                 new ConfigDescription("The time it takes for the turret to shoot at a target in seconds")).Value;
             
         }
+        
         
     }
 }

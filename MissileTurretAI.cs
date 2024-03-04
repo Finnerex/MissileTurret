@@ -12,6 +12,7 @@ namespace MissileTurret;
 public class MissileTurretAI : NetworkBehaviour
 {
     public Transform rod;
+    public Transform rail;
     public GameObject missile;
     public GameObject laser;
     
@@ -23,7 +24,8 @@ public class MissileTurretAI : NetworkBehaviour
     {
         SEARCHING,
         FIRING,
-        CHARGING
+        CHARGING,
+        DISABLED
     }
 
     private MissileTurretState _state;
@@ -39,22 +41,33 @@ public class MissileTurretAI : NetworkBehaviour
     public static float ChargeTimeSeconds = 0.8f;
 
     public AudioSource acquireTargetAudio;
+    public AudioSource disableAudio;
+    public AudioSource enableAudio;
+
+    private float _currentDisableTime = 0f;
+    public static float DisableTimeSeconds = 8f;
 
     private void Awake()
     {
         _currentReloadTime = ReloadTimeSeconds;
         _currentChargeTime = ChargeTimeSeconds;
         _currentRotationSpeed = RotationSpeed;
-        
+        _currentDisableTime = DisableTimeSeconds;
+
+        TerminalAccessibleObject tao = GetComponent<TerminalAccessibleObject>();
+        tao.terminalCodeEvent.AddListener(this, typeof(MissileTurretAI).GetMethod(nameof(DisableTurret)));
+
         laser.SetActive(false);
         ToggleLaserClientRpc(false);
+        
     }
 
     private void Update()
     {
         MissileTurretState? stateToChangeTo = null;
         
-        if (_targetPlayer is null)
+        
+        if (_targetPlayer is null && _state != MissileTurretState.DISABLED)
         {
             stateToChangeTo = MissileTurretState.SEARCHING;
         }
@@ -90,7 +103,7 @@ public class MissileTurretAI : NetworkBehaviour
                         (yaw < 360 - RotationRange && yaw > 180 && _currentRotationSpeed < 0))
                         _currentRotationSpeed = -_currentRotationSpeed;
                     
-                    SetYawClientRpc(yaw);
+                    SetRotationClientRpc(rod.eulerAngles);
                 }
                 
                 break;
@@ -165,10 +178,41 @@ public class MissileTurretAI : NetworkBehaviour
                     _currentReloadTime -= Time.deltaTime;
 
                 break;
+            
+            case MissileTurretState.DISABLED:
+
+                if (_lastState != MissileTurretState.DISABLED)
+                {
+                    disableAudio.Play();
+                    
+                    Vector3 angles = rail.localEulerAngles;
+                    angles.x = -30;
+                    rail.localEulerAngles = angles;
+                    SetRailRotationClientRpc(rail.eulerAngles);
+                }
+
+                if (_currentDisableTime <= 0)
+                {
+                    _currentDisableTime = DisableTimeSeconds;
+                    enableAudio.Play();
+                    
+                    Vector3 angles = rail.localEulerAngles;
+                    angles.x = 0;
+                    rail.localEulerAngles = angles;
+                    SetRailRotationClientRpc(rail.eulerAngles);
+                    
+                    stateToChangeTo = MissileTurretState.SEARCHING;
+                }
+                else
+                    _currentDisableTime -= Time.deltaTime;
+                
+
+                break;
 
         }
         
         _lastState = _state;
+
         if (stateToChangeTo != null && stateToChangeTo != _state &&
             (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer))
         {
@@ -178,6 +222,15 @@ public class MissileTurretAI : NetworkBehaviour
 
     }
 
+    public void DisableTurret(PlayerControllerB pc)
+    {
+        if (pc is null)
+            return;
+
+        _state = MissileTurretState.DISABLED;
+        SetStateClientRpc(_state);
+    }
+
     [ClientRpc]
     private void SetStateClientRpc(MissileTurretState state)
     {
@@ -185,11 +238,15 @@ public class MissileTurretAI : NetworkBehaviour
     }
 
     [ClientRpc]
-    private void SetYawClientRpc(float yaw)
+    private void SetRotationClientRpc(Vector3 rotation)
     {
-        Vector3 angles = rod.localEulerAngles;
-        angles.z = yaw;
-        rod.localEulerAngles = angles;
+        rod.eulerAngles = rotation;
+    }
+    
+    [ClientRpc]
+    private void SetRailRotationClientRpc(Vector3 rotation)
+    {
+        rail.eulerAngles = rotation;
     }
 
     [ClientRpc]
