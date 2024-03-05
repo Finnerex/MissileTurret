@@ -126,11 +126,11 @@ namespace MissileTurret
             
             
             MissileAI.MaxSpeed = Config.Bind<float>(new ConfigDefinition("Missile Options", "Max Speed"), 0.7f,
-                new ConfigDescription("Maximum speed of a missile")).Value;
-            MissileAI.MaxTurnSpeed = Config.Bind<float>(new ConfigDefinition("Missile Options", "Turn Rate"), 0.4f,
+                new ConfigDescription("Maximum speed of a missile")).Value * 100;
+            MissileAI.MaxTurnSpeed = Config.Bind<float>(new ConfigDefinition("Missile Options", "Turn Rate"), 0.5f,
                 new ConfigDescription("How fast the missile can turn")).Value;
-            MissileAI.Acceleration = Config.Bind<float>(new ConfigDefinition("Missile Options", "Acceleration"), 0.4f,
-                new ConfigDescription("Acceleration of the missile")).Value / 100f;
+            MissileAI.Acceleration = Config.Bind<float>(new ConfigDefinition("Missile Options", "Acceleration"), 0.6f,
+                new ConfigDescription("Acceleration of the missile")).Value * 100;
             
             MissileAI.KillRange = Config.Bind<float>(new ConfigDefinition("Missile Options", "Explosive Kill Range"), 1f,
                 new ConfigDescription("Distance from explosion to kill")).Value;
@@ -144,7 +144,7 @@ namespace MissileTurret
             
             MissileTurretAI.RotationSpeed = Config.Bind<float>(
                 new ConfigDefinition("Missile Turret Options", "Rotation Rate"), 0.25f,
-                new ConfigDescription("The speed at which the turret rotates")).Value;
+                new ConfigDescription("The speed at which the turret rotates")).Value * 100;
             
             MissileTurretAI.ReloadTimeSeconds = Config.Bind<float>(
                 new ConfigDefinition("Missile Turret Options", "Reload Time"), 6f,
@@ -153,7 +153,7 @@ namespace MissileTurret
             MissileTurretAI.ChargeTimeSeconds = Config.Bind<float>(
                 new ConfigDefinition("Missile Turret Options", "Charge Time"), 0.8f,
                 new ConfigDescription("The time it takes for the turret to shoot at a target in seconds")).Value;
-            
+
         }
         
         

@@ -44,13 +44,12 @@ public class MissileAI : NetworkBehaviour
         {
             _currentLaunchTime -= Time.deltaTime;
             t.position += t.up * (_speed * 1.5f);
-            _speed += 0.0004f;
+            _speed += 0.0004f * Time.deltaTime;
         }
         else if (_speed < MaxSpeed)
-            _speed += Acceleration;
-        
-        
-        _rigidbody.MovePosition(t.position + forward * _speed);
+            _speed += Acceleration * Time.deltaTime;
+
+        _rigidbody.MovePosition(t.position + forward * (_speed * Time.deltaTime));
 
         
         if (NetworkManager.Singleton.IsServer || NetworkManager.Singleton.IsHost)
@@ -77,7 +76,12 @@ public class MissileAI : NetworkBehaviour
         if (!NetworkManager.Singleton.IsHost && !NetworkManager.Singleton.IsServer) return;
 
         ExplodeClientRpc(transform.position, KillRange, DamageRange);
-        GetComponent<NetworkObject>().Despawn();
+
+        var net = GetComponent<NetworkObject>();
+        
+        if (net is not null)
+            net.Despawn();
+        
         Destroy(gameObject);
     }
     

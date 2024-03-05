@@ -13,8 +13,7 @@ They are like normal turrets but they shoot missiles.
 - Max & min number of turret spawns  
 
 ### Planned Features
-
-- Ability to be disabled from ship  
+  
 - Maybe configurable per-moon spawn rates
 
 ### Issues & Suggestions  
@@ -26,6 +25,7 @@ Also, feel free to contribute!
 
 - Movement speeds are definitetly not constant because I forgot some Time.deltaTime's (I will get to this asap)
 - Missiles might not sync properly between server & client (maybe) (please let me know if you experience this)
+- There could be problems with disabling; it has not been thoroughly tested.
 
 
 #### Credits

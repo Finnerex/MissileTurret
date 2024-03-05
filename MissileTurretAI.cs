@@ -16,9 +16,9 @@ public class MissileTurretAI : NetworkBehaviour
     public GameObject missile;
     public GameObject laser;
     
-    public static float RotationRange = 40f;
-    public static float RotationSpeed = 0.15f;
-    private float _currentRotationSpeed = 0.15f;
+    public static float RotationRange;
+    public static float RotationSpeed;
+    private float _currentRotationSpeed;
 
     private enum MissileTurretState
     {
@@ -34,11 +34,11 @@ public class MissileTurretAI : NetworkBehaviour
     [CanBeNull] private PlayerControllerB _targetPlayer;
     private RaycastHit _lastHit;
     
-    private float _currentReloadTime = 0f;
-    public static float ReloadTimeSeconds = 5f;
+    private float _currentReloadTime;
+    public static float ReloadTimeSeconds;
 
-    private float _currentChargeTime = 0f;
-    public static float ChargeTimeSeconds = 0.8f;
+    private float _currentChargeTime;
+    public static float ChargeTimeSeconds;
 
     public AudioSource acquireTargetAudio;
     public AudioSource disableAudio;
@@ -64,13 +64,16 @@ public class MissileTurretAI : NetworkBehaviour
 
     private void Update()
     {
-        MissileTurretState? stateToChangeTo = null;
+        MissileTurretState? stateToChangeTo = null; // nullable is dumb here but i dont feel like changing it
         
         
-        if (_targetPlayer is null && _state != MissileTurretState.DISABLED)
-        {
-            stateToChangeTo = MissileTurretState.SEARCHING;
-        }
+        // if (_targetPlayer is null && _state != MissileTurretState.DISABLED)
+        // {
+        //     stateToChangeTo = MissileTurretState.SEARCHING;
+        //     laser.SetActive(false);
+        //     ToggleLaserClientRpc(false);
+        //     MissileTurret.TheLogger.LogInfo("The laser was toggled OFF IN THE BENINGING");
+        // }
         
         switch (_state)
         {
@@ -95,7 +98,7 @@ public class MissileTurretAI : NetworkBehaviour
                 
                 if (NetworkManager.Singleton.IsServer || NetworkManager.Singleton.IsHost)
                 {
-                    rod.Rotate(Vector3.forward, _currentRotationSpeed);
+                    rod.Rotate(Vector3.forward, _currentRotationSpeed * Time.deltaTime);
                     
                     float yaw = rod.localEulerAngles.z;
 
@@ -103,7 +106,7 @@ public class MissileTurretAI : NetworkBehaviour
                         (yaw < 360 - RotationRange && yaw > 180 && _currentRotationSpeed < 0))
                         _currentRotationSpeed = -_currentRotationSpeed;
                     
-                    SetRotationClientRpc(rod.eulerAngles);
+                    SetYawClientRpc(yaw);
                 }
                 
                 break;
@@ -124,6 +127,12 @@ public class MissileTurretAI : NetworkBehaviour
                 {
                     _currentChargeTime = ChargeTimeSeconds;
                     stateToChangeTo = MissileTurretState.FIRING;
+                    
+                    if (NetworkManager.Singleton.IsServer || NetworkManager.Singleton.IsHost)
+                    {
+                        laser.SetActive(false);
+                        ToggleLaserClientRpc(false);
+                    }
                 }
                 else
                     _currentChargeTime -= Time.deltaTime;
@@ -131,17 +140,15 @@ public class MissileTurretAI : NetworkBehaviour
                 break;
             
             case MissileTurretState.FIRING:
-                
+
                 if (_targetPlayer is null)
-                    return;
+                {
+                    stateToChangeTo = MissileTurretState.SEARCHING;
+                    break;
+                }
 
                 if (_lastState != MissileTurretState.FIRING)
                 {
-                    if (NetworkManager.Singleton.IsServer || NetworkManager.Singleton.IsHost)
-                    {
-                        laser.SetActive(false);
-                        ToggleLaserClientRpc(false);
-                    }
 
                     // check if can still have line of sight
                     if (!Physics.Raycast(rod.position + rod.forward, _targetPlayer.transform.position - rod.position,
@@ -184,23 +191,40 @@ public class MissileTurretAI : NetworkBehaviour
                 if (_lastState != MissileTurretState.DISABLED)
                 {
                     disableAudio.Play();
+
+                    if (NetworkManager.Singleton.IsServer || NetworkManager.Singleton.IsHost)
+                    {
+                        Vector3 angles = rail.localEulerAngles;
+                        angles.x = -30;
+                        rail.localEulerAngles = angles;
+
+                        Vector3 pos = rail.localPosition;
+                        pos.y = -0.67f;
+                        rail.localPosition = pos;
+
+                        SetRailClientRpc(angles, pos);
+                    }
                     
-                    Vector3 angles = rail.localEulerAngles;
-                    angles.x = -30;
-                    rail.localEulerAngles = angles;
-                    SetRailRotationClientRpc(rail.eulerAngles);
                 }
 
                 if (_currentDisableTime <= 0)
                 {
                     _currentDisableTime = DisableTimeSeconds;
                     enableAudio.Play();
-                    
-                    Vector3 angles = rail.localEulerAngles;
-                    angles.x = 0;
-                    rail.localEulerAngles = angles;
-                    SetRailRotationClientRpc(rail.eulerAngles);
-                    
+
+                    if (NetworkManager.Singleton.IsServer || NetworkManager.Singleton.IsHost)
+                    {
+                        Vector3 angles = rail.localEulerAngles;
+                        angles.x = 0;
+                        rail.localEulerAngles = angles;
+                        
+                        Vector3 pos = rail.localPosition;
+                        pos.y = 0;
+                        rail.localPosition = pos;
+                        
+                        SetRailClientRpc(angles, pos);
+                    }
+
                     stateToChangeTo = MissileTurretState.SEARCHING;
                 }
                 else
@@ -217,7 +241,7 @@ public class MissileTurretAI : NetworkBehaviour
             (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer))
         {
             _state = stateToChangeTo.Value;
-            SetStateClientRpc(_state);
+            SetStateClientRpc(_state, _lastState);
         }
 
     }
@@ -227,26 +251,31 @@ public class MissileTurretAI : NetworkBehaviour
         if (pc is null)
             return;
 
+        _lastState = _state;
         _state = MissileTurretState.DISABLED;
-        SetStateClientRpc(_state);
+        SetStateClientRpc(_state, _lastState);
     }
 
     [ClientRpc]
-    private void SetStateClientRpc(MissileTurretState state)
+    private void SetStateClientRpc(MissileTurretState state, MissileTurretState lastState)
     {
         _state = state;
+        _lastState = lastState;
     }
 
     [ClientRpc]
-    private void SetRotationClientRpc(Vector3 rotation)
+    private void SetYawClientRpc(float yaw)
     {
-        rod.eulerAngles = rotation;
+        Vector3 angles = rod.localEulerAngles;
+        angles.z = yaw;
+        rod.localEulerAngles = angles;
     }
     
     [ClientRpc]
-    private void SetRailRotationClientRpc(Vector3 rotation)
+    private void SetRailClientRpc(Vector3 localEulers, Vector3 localPos)
     {
-        rail.eulerAngles = rotation;
+        rail.localPosition = localPos;
+        rail.localEulerAngles = localEulers;
     }
 
     [ClientRpc]
