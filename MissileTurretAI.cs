@@ -117,10 +117,8 @@ public class MissileTurretAI : NetworkBehaviour
                 {
                     acquireTargetAudio.Play();
                     if (NetworkManager.Singleton.IsServer || NetworkManager.Singleton.IsHost)
-                    {
-                        laser.SetActive(true);
                         ToggleLaserClientRpc(true);
-                    }
+                    
                 }
 
                 if (_currentChargeTime <= 0)
@@ -129,10 +127,8 @@ public class MissileTurretAI : NetworkBehaviour
                     stateToChangeTo = MissileTurretState.FIRING;
                     
                     if (NetworkManager.Singleton.IsServer || NetworkManager.Singleton.IsHost)
-                    {
-                        laser.SetActive(false);
                         ToggleLaserClientRpc(false);
-                    }
+                    
                 }
                 else
                     _currentChargeTime -= Time.deltaTime;
@@ -151,8 +147,12 @@ public class MissileTurretAI : NetworkBehaviour
                 {
 
                     // check if can still have line of sight
-                    if (!Physics.Raycast(rod.position + rod.forward, _targetPlayer.transform.position - rod.position,
-                            out hit, 30, 1051400, QueryTriggerInteraction.Ignore) || !hit.transform.CompareTag("Player"))
+                    if ((!Physics.Raycast(rod.position + rod.forward, _targetPlayer.transform.position - rod.position,
+                             out hit, 30, 1051400, QueryTriggerInteraction.Ignore) ||
+                         !hit.transform.CompareTag("Player"))
+                        && (!Physics.Raycast(rod.position + rod.forward, _targetPlayer.transform.position - rod.position, 
+                             out hit, 30, 1051400, QueryTriggerInteraction.Ignore) ||
+                         !hit.transform.CompareTag("Player")))
                     {
                         stateToChangeTo = MissileTurretState.SEARCHING;
                         break;
@@ -160,11 +160,10 @@ public class MissileTurretAI : NetworkBehaviour
                     
                     if (NetworkManager.Singleton.IsServer || NetworkManager.Singleton.IsHost)
                     {
-                        MissileAI ai = Instantiate(MissileTurret.MissilePrefab, rod.position + Vector3.up, Quaternion.LookRotation(rod.up)).GetComponent<MissileAI>();
+                        MissileAI ai = Instantiate(Plugin.MissilePrefab, rod.position + Vector3.up, Quaternion.LookRotation(rod.up)).GetComponent<MissileAI>();
                         ai.player = _targetPlayer.transform;
                         ai.GetComponent<NetworkObject>().Spawn(true); // fo sho fo real
                         
-                        missile.SetActive(false);
                         ToggleMissileClientRpc(false);
                     }
                     
@@ -173,10 +172,8 @@ public class MissileTurretAI : NetworkBehaviour
                 if (_currentReloadTime <= 0)
                 {
                     if (NetworkManager.Singleton.IsServer || NetworkManager.Singleton.IsHost)
-                    {
-                        missile.SetActive(true);
                         ToggleMissileClientRpc(true);
-                    }
+                    
 
                     _currentReloadTime = ReloadTimeSeconds;
                     stateToChangeTo = MissileTurretState.SEARCHING;

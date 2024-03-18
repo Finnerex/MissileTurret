@@ -57,7 +57,7 @@ public class MissileAI : NetworkBehaviour
             Vector3 between = player.position + Vector3.up - t.position;
 
             Quaternion rotationToTarget = Quaternion.LookRotation(between);
-            t.rotation = Quaternion.Lerp(t.rotation, rotationToTarget, between.magnitude * (MaxTurnSpeed / 100));
+            t.rotation = Quaternion.Lerp(t.rotation, rotationToTarget, between.magnitude * (MaxTurnSpeed * Time.deltaTime));
         }
 
         if (_aliveTimeSeconds > 10)

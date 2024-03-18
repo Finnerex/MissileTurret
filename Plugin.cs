@@ -17,7 +17,7 @@ namespace MissileTurret
 {
     [BepInPlugin("Finnerex.MissileTurret", "MissileTurret", "1.3.0")]
     [BepInDependency(LethalLib.Plugin.ModGUID)] 
-    public class MissileTurret : BaseUnityPlugin
+    public class Plugin : BaseUnityPlugin
     {
         
         private readonly Harmony _harmony = new Harmony("Finnerex.MissileTurret");
@@ -32,7 +32,6 @@ namespace MissileTurret
         // Configs
         public int MaxTurrets;
         public int MinTurrets;
-        public Dictionary<string, float> SpawnWeights = new();
 
         private void Awake()
         {
@@ -82,7 +81,8 @@ namespace MissileTurret
             NetworkPrefabs.RegisterNetworkPrefab(MissilePrefab);
             
             
-            AnimationCurve curve = new AnimationCurve(new Keyframe(0, MinTurrets), new Keyframe(1, MaxTurrets)); // for sure
+            AnimationCurve curve = new AnimationCurve(new Keyframe(0, MinTurrets, 0.267f, 0.267f, 0, 0.246f),
+                new Keyframe(1, MaxTurrets, 61, 61, 0.015f * MaxTurrets, 0)); // for sure
 
             MissileTurretMapObj = new SpawnableMapObject
             {
@@ -127,7 +127,7 @@ namespace MissileTurret
             
             MissileAI.MaxSpeed = Config.Bind<float>(new ConfigDefinition("Missile Options", "Max Speed"), 0.7f,
                 new ConfigDescription("Maximum speed of a missile")).Value * 100;
-            MissileAI.MaxTurnSpeed = Config.Bind<float>(new ConfigDefinition("Missile Options", "Turn Rate"), 0.5f,
+            MissileAI.MaxTurnSpeed = Config.Bind<float>(new ConfigDefinition("Missile Options", "Turn Rate"), 0.6f,
                 new ConfigDescription("How fast the missile can turn")).Value;
             MissileAI.Acceleration = Config.Bind<float>(new ConfigDefinition("Missile Options", "Acceleration"), 0.6f,
                 new ConfigDescription("Acceleration of the missile")).Value * 100;
@@ -151,7 +151,7 @@ namespace MissileTurret
                 new ConfigDescription("The time it takes for the turret to reload in seconds")).Value;
             
             MissileTurretAI.ChargeTimeSeconds = Config.Bind<float>(
-                new ConfigDefinition("Missile Turret Options", "Charge Time"), 0.8f,
+                new ConfigDefinition("Missile Turret Options", "Charge Time"), 0.5f,
                 new ConfigDescription("The time it takes for the turret to shoot at a target in seconds")).Value;
 
         }
