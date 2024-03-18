@@ -20,12 +20,6 @@ They are like normal turrets but they shoot missiles.
 
 Please put any issues or suggestions on the [github](https://github.com/Finnerex/MissileTurret/issues).  
 Also, feel free to contribute!
-  
-#### Known Issues
-
-- Missiles might not sync properly between server & client (maybe) (please let me know if you experience this)
-- There could be problems with disabling; it has not been thoroughly tested.
-
 
 #### Credits
 
