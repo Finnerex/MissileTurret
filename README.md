@@ -10,11 +10,16 @@ They are like normal turrets but they shoot missiles.
 - Explosion kill & damage range  
 - Turret rotation range & rate  
 - Turret charge up & reload time  
-- Max & min number of turret spawns  
+- Max & min number of turret spawns
+
+### Known Issues  
+
+- Does not work in V50
+- Can be added to bestiary despite not having a bestiary entry
 
 ### Planned Features
   
-- Maybe configurable per-moon spawn rates
+- Configurable per-moon spawn rates
 
 ### Issues & Suggestions  
 
