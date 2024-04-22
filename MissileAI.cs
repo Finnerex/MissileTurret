@@ -79,7 +79,7 @@ public class MissileAI : NetworkBehaviour
 
         var net = GetComponent<NetworkObject>();
         
-        if (net is not null)
+        if (net is not null && net.IsSpawned)
             net.Despawn();
         
         Destroy(gameObject);

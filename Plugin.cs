@@ -15,13 +15,11 @@ using Object = UnityEngine.Object;
 
 namespace MissileTurret
 {
-    [BepInPlugin("Finnerex.MissileTurret", "MissileTurret", "1.3.0")]
+    [BepInPlugin("Finnerex.MissileTurret", "MissileTurret", "1.3.3")]
     [BepInDependency(LethalLib.Plugin.ModGUID)] 
     public class Plugin : BaseUnityPlugin
     {
         
-        private readonly Harmony _harmony = new Harmony("Finnerex.MissileTurret");
-
         public static SpawnableMapObject MissileTurretMapObj;
         public static GameObject MissileTurretPrefab;
         public static GameObject MissilePrefab;
