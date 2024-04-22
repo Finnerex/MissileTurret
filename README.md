@@ -14,7 +14,6 @@ They are like normal turrets but they shoot missiles.
 
 ### Known Issues  
 
-- Does not work in V50
 - Can be added to bestiary despite not having a bestiary entry
 
 ### Planned Features
