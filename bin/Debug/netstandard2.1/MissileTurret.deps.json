@@ -12,9 +12,9 @@
           "BepInEx.Analyzers": "1.0.8",
           "BepInEx.Core": "5.4.21",
           "BepInEx.PluginInfoProps": "2.1.0",
-          "Evaisa.LethalLib": "0.15.1",
-          "LethalCompany.GameLibs.Steam": "50.0.1-ngd.0",
-          "UnityEngine.Modules": "2023.2.19"
+          "Evaisa.LethalLib": "0.16.0",
+          "LethalCompany.GameLibs.Steam": "56.0.0-beta.0-ngd.0",
+          "UnityEngine.Modules": "6000.0.5"
         },
         "runtime": {
           "MissileTurret.dll": {}
@@ -36,14 +36,14 @@
         }
       },
       "BepInEx.PluginInfoProps/2.1.0": {},
-      "Evaisa.LethalLib/0.15.1": {
+      "Evaisa.LethalLib/0.16.0": {
         "dependencies": {
           "BepInEx.Core": "5.4.21"
         },
         "runtime": {
           "lib/netstandard2.1/LethalLib.dll": {
             "assemblyVersion": "0.0.0.0",
-            "fileVersion": "0.15.1.0"
+            "fileVersion": "0.16.0.0"
           }
         }
       },
@@ -59,10 +59,10 @@
           }
         }
       },
-      "LethalCompany.GameLibs.Steam/50.0.1-ngd.0": {
+      "LethalCompany.GameLibs.Steam/56.0.0-beta.0-ngd.0": {
         "dependencies": {
           "Newtonsoft.Json": "13.0.3",
-          "UnityEngine.Modules": "2023.2.19"
+          "UnityEngine.Modules": "6000.0.5"
         }
       },
       "Microsoft.NETCore.Platforms/1.1.0": {},
@@ -378,7 +378,7 @@
           "System.Runtime": "4.3.0"
         }
       },
-      "UnityEngine.Modules/2023.2.19": {}
+      "UnityEngine.Modules/6000.0.5": {}
     }
   },
   "libraries": {
@@ -415,12 +415,12 @@
       "path": "bepinex.plugininfoprops/2.1.0",
       "hashPath": "bepinex.plugininfoprops.2.1.0.nupkg.sha512"
     },
-    "Evaisa.LethalLib/0.15.1": {
+    "Evaisa.LethalLib/0.16.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-QEJDkRrufYZpGOZ07TeNcftZTQVcc8nSmbjWos9rEccUDFGNrm3Fp46oGQPtk4QFQD4CHLxlLXmQVQUN0yT2Fw==",
-      "path": "evaisa.lethallib/0.15.1",
-      "hashPath": "evaisa.lethallib.0.15.1.nupkg.sha512"
+      "sha512": "sha512-4kxRiEA08YWcRMOaxFFiUxgfjFbGua9n2plM27Hse6YQ2zuXPMm3BagOX4vYM/XTH0P50giITeXqKRS0BUYQJQ==",
+      "path": "evaisa.lethallib/0.16.0",
+      "hashPath": "evaisa.lethallib.0.16.0.nupkg.sha512"
     },
     "HarmonyX/2.7.0": {
       "type": "package",
@@ -429,12 +429,12 @@
       "path": "harmonyx/2.7.0",
       "hashPath": "harmonyx.2.7.0.nupkg.sha512"
     },
-    "LethalCompany.GameLibs.Steam/50.0.1-ngd.0": {
+    "LethalCompany.GameLibs.Steam/56.0.0-beta.0-ngd.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-QMDEyc7ahSYyzUhq7mwx4QWAfZM/aNjOaZsK+AmM4KHRsostWjsWg28q04vTmDWf9IYW0KFGvLNjMiyjH3745Q==",
-      "path": "lethalcompany.gamelibs.steam/50.0.1-ngd.0",
-      "hashPath": "lethalcompany.gamelibs.steam.50.0.1-ngd.0.nupkg.sha512"
+      "sha512": "sha512-yQMYsvbKFKEJSLpLp4Cht138ACYZpOlMF1D61EP4kvO1rw0Ww98phRQ1Y17XtADHeVhqgFAC1EJLPxYyuzRbHQ==",
+      "path": "lethalcompany.gamelibs.steam/56.0.0-beta.0-ngd.0",
+      "hashPath": "lethalcompany.gamelibs.steam.56.0.0-beta.0-ngd.0.nupkg.sha512"
     },
     "Microsoft.NETCore.Platforms/1.1.0": {
       "type": "package",
@@ -667,12 +667,12 @@
       "path": "system.threading.tasks/4.3.0",
       "hashPath": "system.threading.tasks.4.3.0.nupkg.sha512"
     },
-    "UnityEngine.Modules/2023.2.19": {
+    "UnityEngine.Modules/6000.0.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-y9a3W23FtzeoHlPXajl/HX3OoeBF35LsEXQCWOMubx2cxC5HDHaxmf0+R4jCR953NDz62ka/akSWZStxoOANhw==",
-      "path": "unityengine.modules/2023.2.19",
-      "hashPath": "unityengine.modules.2023.2.19.nupkg.sha512"
+      "sha512": "sha512-WQNp/SQPUHCfS9umALl4GLvvVuxc3HzB0eRjthcIWhoVyWdRQ7An8MzD0Mm1t7D1FsXO/kC1t0qO4pLQGGiWPA==",
+      "path": "unityengine.modules/6000.0.5",
+      "hashPath": "unityengine.modules.6000.0.5.nupkg.sha512"
     }
   }
 }

@@ -13,9 +13,9 @@
     <PackageReference Include="BepInEx.Analyzers" Version="1.0.8" PrivateAssets="all" />
     <PackageReference Include="BepInEx.Core" Version="5.4.21" />
     <PackageReference Include="BepInEx.PluginInfoProps" Version="2.1.0" />
-    <PackageReference Include="Evaisa.LethalLib" Version="0.15.1" />
+    <PackageReference Include="Evaisa.LethalLib" Version="0.16.0" />
     <PackageReference Include="LethalCompany.GameLibs.Steam" Version="*-*" Publicize="true" PrivateAssets="all" />
-    <PackageReference Include="UnityEngine.Modules" Version="2023.2.19" IncludeAssets="compile" />
+    <PackageReference Include="UnityEngine.Modules" Version="6000.0.5" IncludeAssets="compile" />
   </ItemGroup>
   
   <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">

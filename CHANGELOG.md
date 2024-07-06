@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.3.5
+- Updated to LC version 55
+
 ## 1.3.4
 - Fixed an issue with bestiary & scanning
 
